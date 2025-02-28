@@ -26,10 +26,11 @@ import { FAQPage } from "./pages/FAQPage";
 import { HotelSearchPage } from "./pages/HotelSearchPage";
 import { ManualReservationPage } from "./pages/ManualReservationPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
+import { Admin } from "./pages/Admin";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
-    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin"
+    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin" | "admin-empresa"
   >("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -245,6 +246,10 @@ const ResponsiveChat = () => {
     setCurrentPage("bookings");
   };
 
+  const handleAdminClick = () => {
+    setCurrentPage("admin-empresa");
+  }
+
   const handleFAQClick = () => {
     setCurrentPage("faq");
   };
@@ -333,6 +338,7 @@ const ResponsiveChat = () => {
           onChatClick={handleChatClick}
           onBookingsClick={handleBookingsClick}
           onFAQClick={handleFAQClick}
+          onAdminClick={handleAdminClick}
         />
       </div>
 
@@ -358,15 +364,15 @@ const ResponsiveChat = () => {
         <HotelSearchPage onBack={handleBackToChat} />
       ) : currentPage === "manual-reservation" ? (
         <ManualReservationPage onBack={handleBackToChat} />
+      ) : currentPage === "admin-empresa" ? (
+        <Admin/>
       ) : (
         <div className="flex min-h-screen pt-16">
           {/* Chat Panel - Left Side */}
           <div
-            className={`${
-              showWelcomeMessage ? "w-full" : "w-1/2"
-            } transition-all duration-500 ${
-              !showWelcomeMessage && "fixed left-0 h-[calc(100vh-4rem)]"
-            }`}
+            className={`${showWelcomeMessage ? "w-full" : "w-1/2"
+              } transition-all duration-500 ${!showWelcomeMessage && "fixed left-0 h-[calc(100vh-4rem)]"
+              }`}
           >
             {showWelcomeMessage ? (
               <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -551,10 +557,9 @@ const ResponsiveChat = () => {
                         onClick={handleSendMessage}
                         disabled={promptLimitReached || !inputMessage.trim()}
                         className={`px-8 py-4 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2
-                          ${
-                            promptLimitReached || !inputMessage.trim()
-                              ? "bg-white/10 text-white/50 cursor-not-allowed"
-                              : "bg-white text-blue-600 hover:bg-blue-50 transform hover:-translate-y-0.5 hover:shadow-lg"
+                          ${promptLimitReached || !inputMessage.trim()
+                            ? "bg-white/10 text-white/50 cursor-not-allowed"
+                            : "bg-white text-blue-600 hover:bg-blue-50 transform hover:-translate-y-0.5 hover:shadow-lg"
                           }`}
                       >
                         <span>Enviar</span>
