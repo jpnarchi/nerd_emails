@@ -11,9 +11,9 @@ const getPaymentData = (bookingData: BookingData) => {
     confirmation_code: bookingData.confirmationCode
   };
 
-  const imageToUse = bookingData.hotel.additionalImages?.[0] || 
-                     bookingData.hotel.image || 
-                     "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
+  const imageToUse = bookingData.hotel.additionalImages?.[0] ||
+    bookingData.hotel.image ||
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
 
   const currentUrl = window.location.href;
 
@@ -54,9 +54,9 @@ const formatDate = (dateStr: string | null) => {
   };
 };
 
-export const ReservationPanel: React.FC<ReservationPanelProps> = ({ 
+export const ReservationPanel: React.FC<ReservationPanelProps> = ({
   bookingData,
-  onProceedToPayment 
+  onProceedToPayment
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -98,9 +98,9 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
       }
 
       // Get the first image URL from additionalImages
-      const imageUrl = bookingData.hotel.additionalImages?.[0] || 
-                      bookingData.hotel.image || 
-                      "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
+      const imageUrl = bookingData.hotel.additionalImages?.[0] ||
+        bookingData.hotel.image ||
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
 
       // Save booking to database
       const { data: booking, error: bookingError } = await supabase
@@ -124,7 +124,9 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
         throw bookingError;
       }
 
+      console.log("guardado");
       setIsBookingSaved(true);
+      
 
     } catch (error: any) {
       console.error('Error saving booking:', error);
@@ -145,10 +147,10 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
     );
   }
 
-  const hasAnyData = bookingData.hotel?.name || 
-                     bookingData.dates?.checkIn || 
-                     bookingData.room?.type || 
-                     bookingData.confirmationCode;
+  const hasAnyData = bookingData.hotel?.name ||
+    bookingData.dates?.checkIn ||
+    bookingData.room?.type ||
+    bookingData.confirmationCode;
 
   if (!hasAnyData) {
     return (
@@ -179,21 +181,24 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                   </div>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <CallToBackend 
+                <CallToBackend
                   paymentData={getPaymentData(bookingData)}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  bookingData={bookingData}
                 >
                   <PaymentIcon className="w-4 h-4" />
                   <span className="font-medium">Pagar por Stripe</span>
                 </CallToBackend>
-                <button
+                <CallToBackend
+                  paymentData={getPaymentData(bookingData)}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  bookingData={bookingData}
                 >
                   <BanknoteIcon className="w-4 h-4" />
                   <span className="font-medium">Pagar por Transferencia</span>
-                </button>
+                </CallToBackend>
                 <button
                   onClick={handleDownloadPDF}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-[#10244c] text-white rounded-xl hover:bg-[#10244c]/90 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
@@ -212,7 +217,7 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
           </div>
         </div>
       )}
-      
+
       <div id="reservation-content" className="space-y-8">
         {bookingData.hotel?.name && (
           <div className="space-y-4">
@@ -222,8 +227,8 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
             </div>
             <div className="bg-gray-50 rounded-lg overflow-hidden">
               {bookingData.hotel.image && (
-                <img 
-                  src={bookingData.hotel.image} 
+                <img
+                  src={bookingData.hotel.image}
                   alt={bookingData.hotel.name}
                   className="w-full h-48 object-cover"
                 />
