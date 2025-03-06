@@ -32,7 +32,7 @@ const payment_metadata = {};
 const getPaymentData = (booking) => {
   const payment_metadata = {
     booking_id: booking.id,
-    confirmation_code: booking.confirmation_code
+    confirmation_code: booking.confirmation_code,
   };
 
   const currentUrl = window.location.href;
@@ -44,18 +44,25 @@ const getPaymentData = (booking) => {
           currency: "mxn",
           product_data: {
             name: booking.hotel_name,
-            description: `Reservación en ${booking.hotel_name} - ${booking.room_type === 'single' ? 'Habitación Sencilla' : 'Habitación Doble'}`,
+            description: `Reservación en ${booking.hotel_name} - ${
+              booking.room_type === "single"
+                ? "Habitación Sencilla"
+                : "Habitación Doble"
+            }`,
             images: [
-              booking.image_url || "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+              booking.image_url ||
+                "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
             ],
           },
           unit_amount: Math.round(booking.total_price * 100),
         },
         quantity: 1,
-      }
+      },
     ],
     mode: "payment",
-    success_url: `${DOMAIN}?success=true&session={CHECKOUT_SESSION_ID}&metadata=${JSON.stringify(payment_metadata)}`,
+    success_url: `${DOMAIN}?success=true&session={CHECKOUT_SESSION_ID}&metadata=${JSON.stringify(
+      payment_metadata
+    )}`,
     cancel_url: currentUrl,
   };
 };
@@ -162,29 +169,29 @@ export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('es-MX', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric'
+    return date.toLocaleDateString("es-MX", {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case "completed":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       default:
-        return 'bg-red-100 text-red-800 border-red-200';
+        return "bg-red-100 text-red-800 border-red-200";
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <CheckCircle className="w-4 h-4" />;
-      case 'pending':
+      case "pending":
         return <Clock className="w-4 h-4" />;
       default:
         return <AlertTriangle className="w-4 h-4" />;
@@ -201,12 +208,19 @@ export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
         <div className="md:col-span-1">
           <div className="h-full relative">
             <img
-              src={booking.image_url || "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"}
+              src={
+                booking.image_url ||
+                "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80"
+              }
               alt={booking.hotel_name}
               className="w-full h-full object-cover"
             />
             <div className="absolute top-4 left-4">
-              <div className={`px-3 py-1 rounded-full border ${getStatusColor(booking.status)} flex items-center space-x-1`}>
+              <div
+                className={`px-3 py-1 rounded-full border ${getStatusColor(
+                  booking.status
+                )} flex items-center space-x-1`}
+              >
                 {getStatusIcon(booking.status)}
                 <span className="text-sm font-medium capitalize">
                   {booking.status === "completed"
@@ -301,6 +315,7 @@ export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
                 {booking.status === "pending" && (
                   <CallToBackend
                     paymentData={getPaymentData(booking)}
+                    bookingData={booking}
                     className="flex items-center space-x-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
                   >
                     <CreditCard className="w-4 h-4" />

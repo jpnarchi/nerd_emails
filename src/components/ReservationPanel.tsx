@@ -183,6 +183,7 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <CallToBackend 
                   paymentData={getPaymentData(bookingData)}
+                  bookingData={bookingData}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   <PaymentIcon className="w-4 h-4" />

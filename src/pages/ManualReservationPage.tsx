@@ -462,6 +462,7 @@ export const ManualReservationPage: React.FC<ManualReservationPageProps> = ({ on
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                 <CallToBackend
                   paymentData={getPaymentData(hotel, reservationData)}
+                  bookingData={reservationData}
                   className="flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <PaymentIcon className="w-5 h-5" />

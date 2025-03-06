@@ -1,41 +1,48 @@
-import React from 'react';
+import React from "react";
+import { useSolicitud } from "../hooks/useSolicitud";
 
 interface CallToBackendProps {
   children: React.ReactNode;
   paymentData: any;
   className?: string;
+  bookingData?: any;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export const CallToBackend: React.FC<CallToBackendProps> = ({ children, paymentData, className, onClick }) => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const session = urlParams.get("session");
+export const CallToBackend: React.FC<CallToBackendProps> = ({
+  children,
+  bookingData,
+  paymentData,
+  className,
+  onClick,
+}) => {
+  const { crearSolicitud } = useSolicitud();
+  // const urlParams = new URLSearchParams(window.location.search);
+  // const session = urlParams.get("session");
 
-  if (!session) {
-    obtenerSessionCheckout(
-      "cs_live_a10ETlnCEAsKIlJNvhJTRtlQJoAwy8V6zWSAYER15SOesH0dE67tTYGHg6"
-    );
-  }
+  // if (!session) {
+  //   obtenerSessionCheckout(
+  //     "cs_live_a10ETlnCEAsKIlJNvhJTRtlQJoAwy8V6zWSAYER15SOesH0dE67tTYGHg6"
+  //   );
+  // }
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (onClick) onClick(e);
-    crearSessionCheckout(paymentData);
+    crearSolicitud(bookingData);
+    // if (onClick) onClick(e);
+    // crearSessionCheckout(paymentData);
+    console.log(bookingData);
   };
 
   return (
-    <button 
-      onClick={handleSubmit} 
-      className={className}
-      type="button"
-    >
+    <button onClick={handleSubmit} className={className} type="button">
       {children}
     </button>
   );
 };
 
 /* LLAMADAS A LA API*/
-const URL = "https://mianoktos.vercel.app";
+const URL = "httpss://mianoktos.vercel.app";
 const ROUTES = {
   stripe: "/v1/stripe",
 };
