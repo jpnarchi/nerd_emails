@@ -29,7 +29,15 @@ import { AdminDashboard } from "./pages/AdminDashboard";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
-    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin"
+    | "chat"
+    | "profile"
+    | "registration"
+    | "payment"
+    | "bookings"
+    | "faq"
+    | "hotels"
+    | "manual-reservation"
+    | "admin"
   >("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -48,10 +56,10 @@ const ResponsiveChat = () => {
   useEffect(() => {
     // Check URL for manual-reservation route
     const path = window.location.pathname;
-    if (path === '/manual-reservation') {
-      setCurrentPage('manual-reservation');
-    } else if (path === '/admin') {
-      setCurrentPage('admin');
+    if (path === "/manual-reservation") {
+      setCurrentPage("manual-reservation");
+    } else if (path === "/admin") {
+      setCurrentPage("admin");
     }
   }, []);
 
@@ -81,13 +89,15 @@ const ResponsiveChat = () => {
     // Check for existing session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        const isAdmin = session.user.email === 'mianoktos@gmail.com';
+        const isAdmin = session.user.email === "mianoktos@gmail.com";
         setAuthState({
           user: {
             id: session.user.id,
             email: session.user.email!,
-            name: session.user.user_metadata.full_name || session.user.email!.split("@")[0],
-            isAdmin
+            name:
+              session.user.user_metadata.full_name ||
+              session.user.email!.split("@")[0],
+            isAdmin,
           },
           isAuthenticated: true,
           promptCount: 0,
@@ -100,13 +110,15 @@ const ResponsiveChat = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        const isAdmin = session.user.email === 'mianoktos@gmail.com';
+        const isAdmin = session.user.email === "mianoktos@gmail.com";
         setAuthState({
           user: {
             id: session.user.id,
             email: session.user.email!,
-            name: session.user.user_metadata.full_name || session.user.email!.split("@")[0],
-            isAdmin
+            name:
+              session.user.user_metadata.full_name ||
+              session.user.email!.split("@")[0],
+            isAdmin,
           },
           isAuthenticated: true,
           promptCount: 0,
@@ -134,20 +146,22 @@ const ResponsiveChat = () => {
       });
 
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          throw new Error('Correo electrónico o contraseña incorrectos');
+        if (error.message.includes("Invalid login credentials")) {
+          throw new Error("Correo electrónico o contraseña incorrectos");
         }
         throw error;
       }
 
       if (data.user) {
-        const isAdmin = email === 'mianoktos@gmail.com';
+        const isAdmin = email === "mianoktos@gmail.com";
         setAuthState({
           user: {
             id: data.user.id,
             email: data.user.email!,
-            name: data.user.user_metadata.full_name || data.user.email!.split("@")[0],
-            isAdmin
+            name:
+              data.user.user_metadata.full_name ||
+              data.user.email!.split("@")[0],
+            isAdmin,
           },
           isAuthenticated: true,
           promptCount: 0,
@@ -156,7 +170,7 @@ const ResponsiveChat = () => {
 
         // Redirect to admin dashboard if admin user
         if (isAdmin) {
-          setCurrentPage('admin');
+          setCurrentPage("admin");
         }
       }
     } catch (error: any) {
@@ -183,13 +197,13 @@ const ResponsiveChat = () => {
       if (error) throw error;
 
       if (data.user) {
-        const isAdmin = email === 'mianoktos@gmail.com';
+        const isAdmin = email === "mianoktos@gmail.com";
         setAuthState({
           user: {
             id: data.user.id,
             email: data.user.email!,
             name: name,
-            isAdmin
+            isAdmin,
           },
           isAuthenticated: true,
           promptCount: 0,
@@ -317,7 +331,7 @@ const ResponsiveChat = () => {
   const promptLimitReached =
     !authState.isAuthenticated && authState.promptCount >= 2;
 
-  if (currentPage === 'admin' && authState.user?.isAdmin) {
+  if (currentPage === "admin" && authState.user?.isAdmin) {
     return <AdminDashboard />;
   }
 
@@ -576,6 +590,23 @@ const ResponsiveChat = () => {
               />
             </div>
           )}
+
+          <a
+            href="https://wa.me/553976230283"
+            target="_blank"
+            className="fixed bottom-10 right-10 group"
+          >
+            <div className="bg-green-500 p-0 rounded-full shadow-lg w-16 h-16 flex items-center justify-center">
+              <img
+                src="https://cdn2.iconfinder.com/data/icons/simple-social-media-shadow/512/3-512.png"
+                alt="WhatsApp"
+                className="w-25 h-25 object-contain"
+              />
+            </div>
+            <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              ¡Chatea con MIA en WhatsApp!
+            </div>
+          </a>
         </div>
       )}
     </div>
