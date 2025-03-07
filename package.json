@@ -14,7 +14,10 @@
     "axios": "^1.6.7",
     "html2pdf.js": "^0.10.1",
     "lucide-react": "^0.344.0",
+    "papaparse": "^5.5.2",
     "react": "^18.3.1",
+    "react-csv": "^2.2.2",
+    "react-csv-downloader": "^3.3.0",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "remark-gfm": "^4.0.0"

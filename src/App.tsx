@@ -16,6 +16,7 @@ import {
   Hotel,
   Building2,
   ArrowRight,
+  Phone,
 } from "lucide-react";
 import { ReservationPanel } from "./components/ReservationPanel";
 import { PaymentPage } from "./pages/PaymentPage";
@@ -26,10 +27,12 @@ import { FAQPage } from "./pages/FAQPage";
 import { HotelSearchPage } from "./pages/HotelSearchPage";
 import { ManualReservationPage } from "./pages/ManualReservationPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
+import { Admin } from "./pages/Admin";
+import { Configuration } from "./pages/Configuration";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
-    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin"
+    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin" | "admin-empresa" | "configuration"
   >("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -245,12 +248,20 @@ const ResponsiveChat = () => {
     setCurrentPage("bookings");
   };
 
+  const handleAdminClick = () => {
+    setCurrentPage("admin-empresa");
+  }
+
   const handleFAQClick = () => {
     setCurrentPage("faq");
   };
 
   const handleManualReservationClick = () => {
     setCurrentPage("hotels");
+  };
+
+  const handleConfigurationClick = () => {
+    setCurrentPage("configuration");
   };
 
   const handleSendMessage = async () => {
@@ -333,6 +344,8 @@ const ResponsiveChat = () => {
           onChatClick={handleChatClick}
           onBookingsClick={handleBookingsClick}
           onFAQClick={handleFAQClick}
+          onAdminClick={handleAdminClick}
+          onConfigurationClick={handleConfigurationClick}
         />
       </div>
 
@@ -358,15 +371,17 @@ const ResponsiveChat = () => {
         <HotelSearchPage onBack={handleBackToChat} />
       ) : currentPage === "manual-reservation" ? (
         <ManualReservationPage onBack={handleBackToChat} />
+      ) : currentPage === "admin-empresa" ? (
+        <Admin />
+      ) : currentPage === "configuration" ? (
+        <Configuration />
       ) : (
         <div className="flex min-h-screen pt-16">
           {/* Chat Panel - Left Side */}
           <div
-            className={`${
-              showWelcomeMessage ? "w-full" : "w-1/2"
-            } transition-all duration-500 ${
-              !showWelcomeMessage && "fixed left-0 h-[calc(100vh-4rem)]"
-            }`}
+            className={`${showWelcomeMessage ? "w-full" : "w-1/2"
+              } transition-all duration-500 ${!showWelcomeMessage && "fixed left-0 h-[calc(100vh-4rem)]"
+              }`}
           >
             {showWelcomeMessage ? (
               <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -382,7 +397,12 @@ const ResponsiveChat = () => {
                         <br />
                         para Viajes Corporativos.
                       </h2>
-
+                      <div className="fixed bottom-10 right-10 flex flex-row items-center gap-x-3 text-lg">
+                        Mia Ahora en WhatsApp!
+                        <a href="https://wa.me/525520951970?text=Hola,%20necesito%20que%20me%20ayudes%20a%20realizar%20una%20reserva" target="_blank" className="bg-green-600 p-2 w-12 h-12 justify-center items-center flex rounded-full">
+                          <Phone />
+                        </a>
+                      </div>
                       <div className="grid grid-cols-4 gap-3 mb-12">
                         <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 transform hover:scale-105 transition-all duration-300">
                           <div className="flex flex-col items-center space-y-2">
@@ -551,10 +571,9 @@ const ResponsiveChat = () => {
                         onClick={handleSendMessage}
                         disabled={promptLimitReached || !inputMessage.trim()}
                         className={`px-8 py-4 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2
-                          ${
-                            promptLimitReached || !inputMessage.trim()
-                              ? "bg-white/10 text-white/50 cursor-not-allowed"
-                              : "bg-white text-blue-600 hover:bg-blue-50 transform hover:-translate-y-0.5 hover:shadow-lg"
+                          ${promptLimitReached || !inputMessage.trim()
+                            ? "bg-white/10 text-white/50 cursor-not-allowed"
+                            : "bg-white text-blue-600 hover:bg-blue-50 transform hover:-translate-y-0.5 hover:shadow-lg"
                           }`}
                       >
                         <span>Enviar</span>
