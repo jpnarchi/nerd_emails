@@ -27,10 +27,11 @@ import { HotelSearchPage } from "./pages/HotelSearchPage";
 import { ManualReservationPage } from "./pages/ManualReservationPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { Admin } from "./pages/Admin";
+import {Configuration} from "./pages/Configuration";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
-    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin" | "admin-empresa"
+    "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin" | "admin-empresa" | "configuration"
   >("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -258,6 +259,10 @@ const ResponsiveChat = () => {
     setCurrentPage("hotels");
   };
 
+  const handleConfigurationClick = () => {
+    setCurrentPage("configuration");
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -339,6 +344,7 @@ const ResponsiveChat = () => {
           onBookingsClick={handleBookingsClick}
           onFAQClick={handleFAQClick}
           onAdminClick={handleAdminClick}
+          onConfigurationClick={handleConfigurationClick}
         />
       </div>
 
@@ -366,6 +372,8 @@ const ResponsiveChat = () => {
         <ManualReservationPage onBack={handleBackToChat} />
       ) : currentPage === "admin-empresa" ? (
         <Admin/>
+      ) : currentPage === "configuration" ? (
+        <Configuration/>
       ) : (
         <div className="flex min-h-screen pt-16">
           {/* Chat Panel - Left Side */}
