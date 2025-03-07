@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export const Configuration = () => {
-  const [activeTab, setActiveTab] = useState<'companies' | 'employees' | 'assignments' | 'tags' | 'policies'>('companies');
+  const [activeTab, setActiveTab] = useState<'companies' | 'employees' | 'assignments' | 'tags' | 'policies' | 'notifications'>('companies');
   const [companies, setCompanies] = useState<Company[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
@@ -31,12 +31,12 @@ export const Configuration = () => {
 
   // List of departments (could be moved to a separate configuration)
   const departments = [
-    'Engineering',
+    'Ingenieria',
     'Marketing',
-    'Sales',
-    'Human Resources',
-    'Finance',
-    'Operations',
+    'Ventas',
+    'Recursos Humanos',
+    'Finanzas',
+    'Operaciones',
   ];
 
   const handleSearch = (items: any[]) => {
@@ -51,7 +51,7 @@ export const Configuration = () => {
   };
 
   const handleDelete = (type: 'company' | 'employee' | 'assignment' | 'tag' | 'policy', id: string) => {
-    if (!confirm('Are you sure you want to delete this item?')) return;
+    if (!confirm('Estas seguro que quieres eliminarlo?')) return;
 
     switch (type) {
       case 'company':
@@ -146,6 +146,7 @@ export const Configuration = () => {
             tags={tags}
             departments={departments}
             initialData={selectedItem}
+            empresas={companies}
           />
         );
       case 'assignments':
@@ -164,6 +165,7 @@ export const Configuration = () => {
             onSubmit={(data) => handleSubmit('tag', data)}
             onCancel={() => setShowForm(false)}
             initialData={selectedItem}
+            employees = {employees}
           />
         );
       case 'policies':
@@ -174,6 +176,7 @@ export const Configuration = () => {
             departments={departments}
             employees={employees}
             initialData={selectedItem}
+            empresas={companies}
           />
         );
     }
@@ -206,34 +209,32 @@ export const Configuration = () => {
   return (
     <div className="min-h-screen bg-gray-50 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Account Configuration</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Configuración de la cuenta</h1>
 
         <div className="bg-white rounded-lg shadow">
           <div className="border-b border-gray-200">
             <nav className="-mb-px flex flex-wrap">
               <button
                 onClick={() => setActiveTab('companies')}
-                className={`${
-                  activeTab === 'companies'
+                className={`${activeTab === 'companies'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
+                  } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
               >
                 <Building2 className="mr-2 h-5 w-5" />
-                Companies
+                Compañias
               </button>
               <button
                 onClick={() => setActiveTab('employees')}
-                className={`${
-                  activeTab === 'employees'
+                className={`${activeTab === 'employees'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
+                  } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
               >
                 <Users className="mr-2 h-5 w-5" />
-                Employees
+                Empleados
               </button>
-              <button
+              {/* <button
                 onClick={() => setActiveTab('assignments')}
                 className={`${
                   activeTab === 'assignments'
@@ -243,28 +244,36 @@ export const Configuration = () => {
               >
                 <Link className="mr-2 h-5 w-5" />
                 Assignments
-              </button>
+              </button> */}
               <button
                 onClick={() => setActiveTab('tags')}
-                className={`${
-                  activeTab === 'tags'
+                className={`${activeTab === 'tags'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
+                  } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
               >
                 <Tags className="mr-2 h-5 w-5" />
-                Tags
+                Etiquetas
               </button>
               <button
                 onClick={() => setActiveTab('policies')}
-                className={`${
-                  activeTab === 'policies'
+                className={`${activeTab === 'policies'
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
+                  } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
               >
                 <BookOpen className="mr-2 h-5 w-5" />
-                Policies
+                Politicas
+              </button>
+              <button
+                onClick={() => setActiveTab('notifications')}
+                className={`${activeTab === 'notifications'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } flex items-center w-1/5 py-4 px-1 border-b-2 font-medium text-sm`}
+              >
+                <BookOpen className="mr-2 h-5 w-5" />
+                Notificaciones
               </button>
             </nav>
           </div>
@@ -279,7 +288,7 @@ export const Configuration = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                     <input
                       type="text"
-                      placeholder="Search..."
+                      placeholder="Buscar..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -294,7 +303,7 @@ export const Configuration = () => {
                     className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                   >
                     <Plus className="mr-2 h-5 w-5" />
-                    Add New
+                    Añadir nueva
                   </button>
                 </div>
 
@@ -305,76 +314,76 @@ export const Configuration = () => {
                         {activeTab === 'companies' && (
                           <>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Company Name
+                              Nombre de la empresa
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Tax ID
+                              RFC
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Contact
+                              Contacto
                             </th>
                           </>
                         )}
                         {activeTab === 'employees' && (
                           <>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Employee
+                              Empleado
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Position
+                              Posición
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Tags
+                              Etiquetas
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Contact
+                              Contacto
                             </th>
                           </>
                         )}
                         {activeTab === 'assignments' && (
                           <>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Company
+                              Compañia
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Employee
+                              Empleado
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Role
+                              Rol
                             </th>
                           </>
                         )}
                         {activeTab === 'tags' && (
                           <>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Tag Name
+                              Nombre de la etiqueta
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Description
+                              Descripción
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Used By
+                              Usada por
                             </th>
                           </>
                         )}
                         {activeTab === 'policies' && (
                           <>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Policy Name
+                              Nombre de politica
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Type
+                              Tipo
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
+                              Estatus
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Validity
+                              Validez
                             </th>
                           </>
                         )}
                         <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
+                          Acciones
                         </th>
                       </tr>
                     </thead>
@@ -529,13 +538,12 @@ export const Configuration = () => {
                                 </div>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                  assignment.role === 'admin'
+                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${assignment.role === 'admin'
                                     ? 'bg-red-100 text-red-800'
                                     : assignment.role === 'manager'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-green-100 text-green-800'
-                                }`}>
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-green-100 text-green-800'
+                                  }`}>
                                   {assignment.role.charAt(0).toUpperCase() + assignment.role.slice(1)}
                                 </span>
                               </td>
@@ -617,28 +625,26 @@ export const Configuration = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                policy.type === 'budget'
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${policy.type === 'budget'
                                   ? 'bg-green-100 text-green-800'
                                   : policy.type === 'schedule'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : policy.type === 'benefits'
-                                  ? 'bg-purple-100 text-purple-800'
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}>
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : policy.type === 'benefits'
+                                      ? 'bg-purple-100 text-purple-800'
+                                      : 'bg-gray-100 text-gray-800'
+                                }`}>
                                 {policy.type.charAt(0).toUpperCase() + policy.type.slice(1)}
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                policy.status === 'active'
+                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${policy.status === 'active'
                                   ? 'bg-green-100 text-green-800'
                                   : policy.status === 'inactive'
-                                  ? 'bg-gray-100 text-gray-800'
-                                  : policy.status === 'draft'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
+                                    ? 'bg-gray-100 text-gray-800'
+                                    : policy.status === 'draft'
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-red-100 text-red-800'
+                                }`}>
                                 {policy.status.charAt(0).toUpperCase() + policy.status.slice(1)}
                               </span>
                             </td>

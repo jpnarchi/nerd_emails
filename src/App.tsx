@@ -16,6 +16,7 @@ import {
   Hotel,
   Building2,
   ArrowRight,
+  Phone,
 } from "lucide-react";
 import { ReservationPanel } from "./components/ReservationPanel";
 import { PaymentPage } from "./pages/PaymentPage";
@@ -27,7 +28,7 @@ import { HotelSearchPage } from "./pages/HotelSearchPage";
 import { ManualReservationPage } from "./pages/ManualReservationPage";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import { Admin } from "./pages/Admin";
-import {Configuration} from "./pages/Configuration";
+import { Configuration } from "./pages/Configuration";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
@@ -371,9 +372,9 @@ const ResponsiveChat = () => {
       ) : currentPage === "manual-reservation" ? (
         <ManualReservationPage onBack={handleBackToChat} />
       ) : currentPage === "admin-empresa" ? (
-        <Admin/>
+        <Admin />
       ) : currentPage === "configuration" ? (
-        <Configuration/>
+        <Configuration />
       ) : (
         <div className="flex min-h-screen pt-16">
           {/* Chat Panel - Left Side */}
@@ -396,7 +397,12 @@ const ResponsiveChat = () => {
                         <br />
                         para Viajes Corporativos.
                       </h2>
-
+                      <div className="fixed bottom-10 right-10 flex flex-row items-center gap-x-3 text-lg">
+                        Mia Ahora en WhatsApp!
+                        <a href="https://wa.me/525520951970?text=Hola,%20necesito%20que%20me%20ayudes%20a%20realizar%20una%20reserva" target="_blank" className="bg-green-600 p-2 w-12 h-12 justify-center items-center flex rounded-full">
+                          <Phone />
+                        </a>
+                      </div>
                       <div className="grid grid-cols-4 gap-3 mb-12">
                         <div className="bg-white/10 backdrop-blur-lg rounded-lg p-3 transform hover:scale-105 transition-all duration-300">
                           <div className="flex flex-col items-center space-y-2">

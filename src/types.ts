@@ -56,6 +56,7 @@ export interface Company {
   phone: string;
   email: string;
   logo?: string;
+  razon: string;
 }
 
 export interface Employee {
@@ -70,6 +71,13 @@ export interface Employee {
   tagIds: string[];
   policyIds: string[];
   department: string;
+  nombre: string;
+  segundNombre: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  sexo: string;
+  empresa: string;
+  genero: string;
 }
 
 export interface Assignment {
@@ -85,6 +93,7 @@ export interface Tag {
   name: string;
   color: string;
   description?: string;
+  employeeIds: string[];
 }
 
 export interface Policy {
@@ -97,6 +106,7 @@ export interface Policy {
   endDate: string;
   departments: string[];
   employeeIds: string[];
+  empresasIds: string[];
   status: PolicyStatus;
 }
 

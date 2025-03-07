@@ -10,18 +10,19 @@ interface EmployeeFormProps {
   initialData?: Employee;
 }
 
-export function EmployeeForm({ 
-  onSubmit, 
-  onCancel, 
+export function EmployeeForm({
+  onSubmit,
+  onCancel,
   tags,
   departments,
-  initialData 
+  initialData,
+  empresas,
 }: EmployeeFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    
+
     const data: Partial<Employee> = {
       fullName: formData.get('fullName') as string,
       documentId: formData.get('documentId') as string,
@@ -32,8 +33,14 @@ export function EmployeeForm({
       photo: formData.get('photo') as string,
       department: formData.get('department') as string,
       tagIds: Array.from(formData.getAll('tagIds') as string[]),
+      nombre: formData.get('nombre') as string,
+      segundNombre: formData.get('segundNombre') as string,
+      apellidoMaterno: formData.get('apellidoM') as string,
+      apellidoPaterno: formData.get('apellidoP') as string,
+      empresa: formData.get('empresa') as string,
+      genero: formData.get('genero') as string,
     };
-    
+
     onSubmit(data);
   };
 
@@ -41,7 +48,7 @@ export function EmployeeForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">
-          {initialData ? 'Edit Employee' : 'Add New Employee'}
+          {initialData ? 'Editar Empleado' : 'Añadir Nuevo Empleado'}
         </h2>
         <button
           type="button"
@@ -53,14 +60,14 @@ export function EmployeeForm({
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="md:col-span-2">
+        <div>
           <label className="block text-sm font-medium text-gray-700">
-            Full Name
+            Nombre
           </label>
           <input
             type="text"
-            name="fullName"
-            defaultValue={initialData?.fullName}
+            name="nombre"
+            defaultValue={initialData?.nombre}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
@@ -68,7 +75,45 @@ export function EmployeeForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            DNI/NIE
+            Segundo nombre
+          </label>
+          <input
+            type="text"
+            name="segundNombre"
+            defaultValue={initialData?.segundNombre}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Apellido Paterno
+          </label>
+          <input
+            type="text"
+            name="apellidoP"
+            defaultValue={initialData?.apellidoPaterno}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Apellido Materno
+          </label>
+          <input
+            type="text"
+            name="apellidoM"
+            defaultValue={initialData?.apellidoMaterno}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Numero de pasaporte
           </label>
           <input
             type="text"
@@ -81,7 +126,7 @@ export function EmployeeForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Professional Email
+            Correo electronico
           </label>
           <input
             type="email"
@@ -94,7 +139,7 @@ export function EmployeeForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Phone
+            Telefono
           </label>
           <input
             type="tel"
@@ -107,7 +152,7 @@ export function EmployeeForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Position
+            Posición
           </label>
           <input
             type="text"
@@ -120,7 +165,25 @@ export function EmployeeForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Department
+            Empresa
+          </label>
+          <select
+            name="empresa"
+            defaultValue={initialData?.empresa}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="">Selecciona una empresa</option>
+            {empresas.map((empresa) => (
+              <option key={empresa.id} value={empresa.name}>
+                {empresa.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Departamento
           </label>
           <select
             name="department"
@@ -128,7 +191,7 @@ export function EmployeeForm({
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
-            <option value="">Select a department</option>
+            <option value="">Selecciona un departamento</option>
             {departments.map((dept) => (
               <option key={dept} value={dept}>
                 {dept}
@@ -139,7 +202,7 @@ export function EmployeeForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Start Date
+            Fecha de nacimiento
           </label>
           <input
             type="date"
@@ -149,10 +212,24 @@ export function EmployeeForm({
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
-
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Sexo (Género)
+          </label>
+          <select
+            name="genero"
+            defaultValue={initialData?.genero}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="">Selecciona genero</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+          </select>
+        </div>
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Profile Photo URL (optional)
+            URL de foto de perfil (opcional)
           </label>
           <input
             type="url"
@@ -162,9 +239,9 @@ export function EmployeeForm({
           />
         </div>
 
-        <div className="md:col-span-2">
+        {/* <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tags
+            Etiquetas
           </label>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {tags.map((tag) => (
@@ -182,7 +259,7 @@ export function EmployeeForm({
                   />
                 </div>
                 <div className="ml-3 text-sm">
-                  <span 
+                  <span
                     className="font-medium text-gray-700"
                     style={{ color: tag.color }}
                   >
@@ -192,7 +269,7 @@ export function EmployeeForm({
               </label>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex justify-end space-x-4">
@@ -201,13 +278,13 @@ export function EmployeeForm({
           onClick={onCancel}
           className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          Cancel
+          Cancelar
         </button>
         <button
           type="submit"
           className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
         >
-          {initialData ? 'Update Employee' : 'Add Employee'}
+          {initialData ? 'Actualizar Empleado' : 'Añadir Empleado'}
         </button>
       </div>
     </form>

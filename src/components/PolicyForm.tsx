@@ -15,7 +15,8 @@ export function PolicyForm({
   onCancel, 
   departments,
   employees,
-  initialData 
+  initialData,
+  empresas,
 }: PolicyFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +42,7 @@ export function PolicyForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">
-          {initialData ? 'Edit Policy' : 'Create New Policy'}
+          {initialData ? 'Editar politica' : 'Crear nueva politica'}
         </h2>
         <button
           type="button"
@@ -55,7 +56,7 @@ export function PolicyForm({
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Policy Name
+            Nombre de la politica
           </label>
           <input
             type="text"
@@ -68,7 +69,7 @@ export function PolicyForm({
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Description
+            Descripción
           </label>
           <textarea
             name="description"
@@ -81,7 +82,7 @@ export function PolicyForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Policy Type
+            Tipo de politica
           </label>
           <select
             name="type"
@@ -89,16 +90,16 @@ export function PolicyForm({
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
-            <option value="budget">Budget</option>
-            <option value="schedule">Schedule</option>
-            <option value="benefits">Benefits</option>
-            <option value="other">Other</option>
+            <option value="budget">Presupuesto</option>
+            <option value="schedule">Horario</option>
+            <option value="benefits">Beneficios</option>
+            <option value="other">Otro</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Value (if applicable)
+            Valor (si es necesario)
           </label>
           <input
             type="number"
@@ -109,9 +110,9 @@ export function PolicyForm({
           />
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">
-            Start Date
+            Fecha de inicio
           </label>
           <input
             type="date"
@@ -124,7 +125,7 @@ export function PolicyForm({
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            End Date
+            Fecha de termino
           </label>
           <input
             type="date"
@@ -133,11 +134,11 @@ export function PolicyForm({
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
-        </div>
+        </div> */}
 
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700">
-            Departments
+            Departamentos
           </label>
           <select
             name="departments"
@@ -152,11 +153,11 @@ export function PolicyForm({
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Specific Employees
+            Empleados especificos
           </label>
           <select
             name="employeeIds"
@@ -172,6 +173,24 @@ export function PolicyForm({
             ))}
           </select>
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Empresas
+          </label>
+          <select
+            name="empresas"
+            multiple
+            defaultValue={initialData?.empresas || []}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            size={4}
+          >
+            {empresas.map((empresa) => (
+              <option key={empresa.id} value={empresa.name}>
+                {empresa.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">
@@ -183,10 +202,9 @@ export function PolicyForm({
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           >
-            <option value="draft">Draft</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="expired">Expired</option>
+            <option value="draft">Borrador</option>
+            <option value="active">Activo</option>
+            <option value="inactive">Inactivo</option>
           </select>
         </div>
       </div>
@@ -203,7 +221,7 @@ export function PolicyForm({
           type="submit"
           className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
         >
-          {initialData ? 'Update Policy' : 'Create Policy'}
+          {initialData ? 'Actualizar Politica' : 'Crear politica'}
         </button>
       </div>
     </form>

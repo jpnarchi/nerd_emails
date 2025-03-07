@@ -21,6 +21,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
       phone: formData.get('phone') as string,
       email: formData.get('email') as string,
       logo: formData.get('logo') as string,
+      razon: formData.get('razon') as string,
     };
     
     onSubmit(data);
@@ -30,7 +31,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">
-          {initialData ? 'Edit Company' : 'Register New Company'}
+          {initialData ? 'Editar Compañia' : 'Registrar Nueva Compañia'}
         </h2>
         <button
           type="button"
@@ -44,7 +45,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Company Name
+            Nombre comercial de la empresa
           </label>
           <input
             type="text"
@@ -57,7 +58,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Tax ID (NIF/CIF)
+            RFC
           </label>
           <input
             type="text"
@@ -67,10 +68,21 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
-
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Address
+            Razón social
+          </label>
+          <input
+            type="text"
+            name="razon"
+            defaultValue={initialData?.razon}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Dirección
           </label>
           <input
             type="text"
@@ -83,7 +95,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Phone
+            Telefono
           </label>
           <input
             type="tel"
@@ -96,7 +108,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
 
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Corporate Email
+            Correo electronico corporativo
           </label>
           <input
             type="email"
@@ -109,7 +121,7 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700">
-            Logo URL (optional)
+            Logo URL (opcional)
           </label>
           <input
             type="url"
@@ -126,13 +138,13 @@ export function CompanyForm({ onSubmit, onCancel, initialData }: CompanyFormProp
           onClick={onCancel}
           className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          Cancel
+          Cancelar
         </button>
         <button
           type="submit"
           className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
         >
-          {initialData ? 'Update Company' : 'Create Company'}
+          {initialData ? 'Actualizar Compañia' : 'Crear Compañia'}
         </button>
       </div>
     </form>
