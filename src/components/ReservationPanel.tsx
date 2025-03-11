@@ -23,8 +23,12 @@ const getPaymentData = (bookingData: BookingData) => {
     confirmation_code: bookingData.confirmationCode,
   };
 
+<<<<<<< HEAD
   const imageToUse =
     bookingData.hotel.additionalImages?.[0] ||
+=======
+  const imageToUse = bookingData.hotel.additionalImages?.[0] ||
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
     bookingData.hotel.image ||
     "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
 
@@ -75,7 +79,11 @@ const formatDate = (dateStr: string | null) => {
 
 export const ReservationPanel: React.FC<ReservationPanelProps> = ({
   bookingData,
+<<<<<<< HEAD
   onProceedToPayment,
+=======
+  onProceedToPayment
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -121,8 +129,12 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
       }
 
       // Get the first image URL from additionalImages
+<<<<<<< HEAD
       const imageUrl =
         bookingData.hotel.additionalImages?.[0] ||
+=======
+      const imageUrl = bookingData.hotel.additionalImages?.[0] ||
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
         bookingData.hotel.image ||
         "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
 
@@ -148,7 +160,13 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
         throw bookingError;
       }
 
+      console.log("guardado");
       setIsBookingSaved(true);
+<<<<<<< HEAD
+=======
+      
+
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
     } catch (error: any) {
       console.error("Error saving booking:", error);
       setSaveError(error.message || "Error al guardar la reservación");
@@ -170,8 +188,12 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
     );
   }
 
+<<<<<<< HEAD
   const hasAnyData =
     bookingData.hotel?.name ||
+=======
+  const hasAnyData = bookingData.hotel?.name ||
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
     bookingData.dates?.checkIn ||
     bookingData.room?.type ||
     bookingData.confirmationCode;
@@ -217,14 +239,23 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                   paymentData={getPaymentData(bookingData)}
                   bookingData={bookingData}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  bookingData={bookingData}
                 >
                   <PaymentIcon className="w-4 h-4" />
                   <span className="font-medium">Pagar por Stripe</span>
                 </CallToBackend>
+<<<<<<< HEAD
                 <button className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+=======
+                <CallToBackend
+                  paymentData={getPaymentData(bookingData)}
+                  className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  bookingData={bookingData}
+                >
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
                   <BanknoteIcon className="w-4 h-4" />
                   <span className="font-medium">Pagar por Transferencia</span>
-                </button>
+                </CallToBackend>
                 <button
                   onClick={handleDownloadPDF}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-[#10244c] text-white rounded-xl hover:bg-[#10244c]/90 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"

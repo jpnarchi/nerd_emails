@@ -26,7 +26,12 @@ import {
   Factory,
   FileSignature,
   MapPinned,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Gift,
+  WalletCards,
+  Coins,
+  Trophy,
+  ArrowRight,
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -80,7 +85,16 @@ interface Payment {
   }
 }
 
-export const AdminDashboard = () => {
+interface Factura {
+  id: string;
+  invoice_type: string;
+  status: string;
+  amount: number;
+  tax_percentage: number;
+  created_at: string;
+}
+
+export const Admin = () => {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalBookings: 0,
@@ -94,7 +108,7 @@ export const AdminDashboard = () => {
     monthlyRevenue: []
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [activeView, setActiveView] = useState<'overview' | 'users' | 'bookings' | 'payments'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'users' | 'bookings' | 'payments' | 'facturas' | 'rewards'>('overview');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTermUser, setSearchTermUser] = useState('')
   const [dateStart, setDateStart] = useState('');
@@ -102,6 +116,8 @@ export const AdminDashboard = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+  const [facturas, setFacturas] = useState<Factura[]>([]);
+  const [filteredFactura, setFilteredFactura] = useState<Factura[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -127,16 +143,6 @@ export const AdminDashboard = () => {
   //mostrar exportaciones
   const [exportUsers, setExportUsers] = useState(false);
   const [exportBookings, setExportBookings] = useState(false);
-  const [showNewBookingModal, setShowNewBookingModal] = useState(false);
-  const [newBooking, setNewBooking] = useState({
-    hotel_name: '',
-    check_in: '',
-    check_out: '',
-    room_type: 'single',
-    total_price: 0,
-    user_email: '',
-    confirmation_code: `RES${Date.now().toString().slice(-6)}`
-  });
 
   useEffect(() => {
     fetchDashboardData();
@@ -161,6 +167,18 @@ export const AdminDashboard = () => {
   }, [activeView]);
 
   useEffect(() => {
+    if (activeView === 'facturas') {
+      fetchFacturas();
+    }
+  }, [activeView]);
+
+  useEffect(() => {
+    if (activeView === 'rewards') {
+      fetchPoints();
+    }
+  }, [activeView]);
+
+  useEffect(() => {
     filterBookings();
   }, [searchTerm, statusFilter, bookings, dateEnd, dateStart]);
 
@@ -176,8 +194,7 @@ export const AdminDashboard = () => {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(booking =>
         booking.hotel_name.toLowerCase().includes(searchLower) ||
-        booking.confirmation_code.toLowerCase().includes(searchLower) ||
-        booking.user?.email.toLowerCase().includes(searchLower)
+        booking.confirmation_code.toLowerCase().includes(searchLower)
       );
     }
 
@@ -210,6 +227,26 @@ export const AdminDashboard = () => {
     setFilteredUsers(filtered);
   };
 
+  const fetchPoints = async () => {
+    try {
+      const { data: user, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw userError;
+      }
+      if (!user) {
+        throw new Error("No hay usuario autenticado.");
+      }
+      const { data: points, error } = await supabase.rpc("obtener_puntos", {
+        id_socio: user.user.id,
+      });
+      if (error) throw error;
+      console.log(points);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
+
   const fetchBookings = async () => {
     try {
       const { data: user, error: userError } = await supabase.auth.getUser();
@@ -222,7 +259,7 @@ export const AdminDashboard = () => {
       }
       const { data: bookingsData, error } = await supabase
         .from('bookings')
-        .select("*, company_profiles(company_name)");
+        .select("*, company_profiles(company_name)").eq("user_id", user.user.id);
 
       if (error) throw error;
 
@@ -230,6 +267,29 @@ export const AdminDashboard = () => {
       setFilteredBookings(bookingsData || []);
     } catch (error) {
       console.error('Error fetching bookings:', error);
+    }
+  };
+
+  const fetchFacturas = async () => {
+    try {
+      const { data: user, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw userError;
+      }
+      if (!user) {
+        throw new Error("No hay usuario autenticado.");
+      }
+      const { data: facturasData, error } = await supabase
+        .from('invoices')
+        .select("*").eq("user_id", user.user.id);
+
+      if (error) throw error;
+
+      setFacturas(facturasData || []);
+      setFilteredFactura(facturasData || []);
+    } catch (error) {
+      console.error('Error fetching facturas', error);
     }
   };
 
@@ -244,10 +304,11 @@ export const AdminDashboard = () => {
       }
       const { data: userData, error } = await supabase
         .from('company_profiles')
-        .select("*");
+        .select("*, viajeros(*)");
       if (error) throw error;
       setUsers(userData || []);
       setFilteredUsers(userData || []);
+      console.log(userData);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -264,7 +325,7 @@ export const AdminDashboard = () => {
       }
       const { data: payments, error } = await supabase
         .from('payments')
-        .select("*, bookings(hotel_name)");
+        .select("*, bookings(hotel_name)").eq("user_id", user.user.id);
       if (error) throw error;
       setPayments(payments || []);
       setFilteredPayments(payments || []);
@@ -273,66 +334,28 @@ export const AdminDashboard = () => {
     }
   }
 
-  const handleCreateBooking = async () => {
-    try {
-      // First get the user ID from the email
-      const { data: userData, error: userError } = await supabase
-        .from('auth.users')
-        .select('id')
-        .eq('email', newBooking.user_email)
-        .single();
-
-      if (userError) throw userError;
-
-      const { error: bookingError } = await supabase
-        .from('bookings')
-        .insert({
-          confirmation_code: newBooking.confirmation_code,
-          user_id: userData.id,
-          hotel_name: newBooking.hotel_name,
-          check_in: newBooking.check_in,
-          check_out: newBooking.check_out,
-          room_type: newBooking.room_type,
-          total_price: newBooking.total_price,
-          status: 'pending'
-        });
-
-      if (bookingError) throw bookingError;
-
-      setShowNewBookingModal(false);
-      fetchBookings();
-    } catch (error) {
-      console.error('Error creating booking:', error);
-    }
-  };
-
-  const handleUpdateBookingStatus = async (bookingId: string, newStatus: string) => {
-    try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status: newStatus })
-        .eq('id', bookingId);
-
-      if (error) throw error;
-      fetchBookings();
-    } catch (error) {
-      console.error('Error updating booking status:', error);
-    }
-  };
-
   const fetchDashboardData = async () => {
     try {
       setIsRefreshing(true);
+      const { data: user, error: userError } = await supabase.auth.getUser();
 
-      // Fetch total users
+      if (userError) {
+        throw userError;
+      }
+      if (!user) {
+        throw new Error("No hay usuario autenticado.");
+      }
+      console.log(user.user.id);
+
+      // Fetch total travelers
       const { count: userCount } = await supabase
-        .from('company_profiles')
-        .select('*', { count: 'exact' });
+        .from('viajeros')
+        .select('*', { count: 'exact' }).eq('id_empresa', user.user.id);
 
       // Fetch bookings statistics
       const { data: bookings } = await supabase
         .from('bookings')
-        .select('*');
+        .select('*').eq("user_id", user.user.id);
 
       const activeBookings = bookings?.filter(b => b.status === 'pending').length || 0;
       const completedBookings = bookings?.filter(b => b.status === 'completed').length || 0;
@@ -341,7 +364,7 @@ export const AdminDashboard = () => {
       // Fetch recent payments with booking details
       const { data: payments } = await supabase
         .from('payments')
-        .select('*, bookings(hotel_name)')
+        .select('*, bookings(hotel_name)').eq("user_id", user.user.id)
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -350,15 +373,15 @@ export const AdminDashboard = () => {
 
       // Fetch recent users with company profiles
       const { data: recentUsers } = await supabase
-        .from('company_profiles')
-        .select('*')
+        .from('viajeros')
+        .select('*').eq("id_empresa", user.user.id)
         .order('created_at', { ascending: false })
         .limit(5);
 
       // Fetch recent bookings
       const { data: recentBookings } = await supabase
         .from('bookings')
-        .select('*')
+        .select('*').eq("user_id", user.user.id)
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -424,7 +447,7 @@ export const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 mt-20">
       {/* Header */}
       <div className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -467,7 +490,7 @@ export const AdminDashboard = () => {
               }`}
           >
             <Users className="w-5 h-5" />
-            <span>Usuarios</span>
+            <span>Viajeros</span>
           </button>
           <button
             onClick={() => setActiveView('bookings')}
@@ -489,6 +512,26 @@ export const AdminDashboard = () => {
             <CreditCard className="w-5 h-5" />
             <span>Pagos</span>
           </button>
+          <button
+            onClick={() => setActiveView('facturas')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeView === 'facturas'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-600 hover:bg-gray-50'
+              }`}
+          >
+            <WalletCards className="w-5 h-5" />
+            <span>Facturas</span>
+          </button>
+          <button
+            onClick={() => setActiveView('rewards')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${activeView === 'rewards'
+              ? 'bg-blue-600 text-white'
+              : 'bg-white text-gray-600 hover:bg-gray-50'
+              }`}
+          >
+            <Gift className="w-5 h-5" />
+            <span>Mia Rewards</span>
+          </button>
         </div>
 
         {/* Overview */}
@@ -500,7 +543,7 @@ export const AdminDashboard = () => {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Total de Usuarios</p>
+                    <p className="text-sm text-gray-500">Total de Viajeros</p>
                     <h3 className="text-2xl font-bold text-gray-900 mt-1">
                       {stats.totalUsers}
                     </h3>
@@ -511,7 +554,7 @@ export const AdminDashboard = () => {
                 </div>
                 <div className="mt-4 flex items-center text-sm text-green-600">
                   <ArrowUpRight className="w-4 h-4 mr-1" />
-                  <span>12% más que el mes pasado</span>
+                  <span>{13} mas que el mes pasado</span>
                 </div>
               </div>
 
@@ -538,7 +581,7 @@ export const AdminDashboard = () => {
               <div className="bg-white rounded-xl shadow-sm p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Ingresos Totales</p>
+                    <p className="text-sm text-gray-500">Gastos Totales</p>
                     <h3 className="text-2xl font-bold text-gray-900 mt-1">
                       {formatCurrency(stats.totalRevenue)}
                     </h3>
@@ -843,13 +886,6 @@ export const AdminDashboard = () => {
                   </button>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => setShowNewBookingModal(true)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <Plus className="w-5 h-5" />
-                    <span>Nueva Reserva</span>
-                  </button>
                   <div className="relative flex items-center space-x-4">
                     <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onClick={() => setExportBookings(!exportBookings)}>
                       <Download className="w-5 h-5" />
@@ -973,16 +1009,6 @@ export const AdminDashboard = () => {
                       <Clock className="w-5 h-5" />
                       <span>Estado</span>
                     </button>
-                    <button
-                      onClick={() => setActiveColActionsBookings(!activeColActionsBookings)}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-slate-200 border-2 ${activeColActionsBookings
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-50'
-                        }`}
-                    >
-                      <FilePenLine className="w-5 h-5" />
-                      <span>Acciones</span>
-                    </button>
                   </div>
                 </div>}
 
@@ -997,7 +1023,6 @@ export const AdminDashboard = () => {
                       {activeColDateBookings && <th className="pb-3 font-semibold text-gray-600">Fechas</th>}
                       {activeColPriceBookings && <th className="pb-3 font-semibold text-gray-600">Precio</th>}
                       {activeColStatusBookings && <th className="pb-3 font-semibold text-gray-600">Estado</th>}
-                      {activeColActionsBookings && <th className="pb-3 font-semibold text-gray-600">Acciones</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -1060,20 +1085,6 @@ export const AdminDashboard = () => {
                             {booking.status}
                           </span>
                         </td>}
-                        {activeColActionsBookings &&
-                          <td className="py-4">
-                            <div className="flex items-center space-x-2">
-                              <select
-                                value={booking.status}
-                                onChange={(e) => handleUpdateBookingStatus(booking.id, e.target.value)}
-                                className="px-2 py-1 border border-gray-300 rounded text-sm"
-                              >
-                                <option value="pending">Pendiente</option>
-                                <option value="completed">Completada</option>
-                                <option value="cancelled">Cancelada</option>
-                              </select>
-                            </div>
-                          </td>}
                       </tr>
                     ))}
                   </tbody>
@@ -1143,6 +1154,174 @@ export const AdminDashboard = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>)}
+
+
+        {/* Facturas View */}
+        {activeView === 'facturas' && (
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Gestión de Facturas</h3>
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Buscar pagos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* Payments Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full" id="bookings">
+                  <thead>
+                    <tr className="text-left border-b border-gray-200">
+                      <th className="pb-3 font-semibold text-gray-600">Monto</th>
+                      <th className="pb-3 font-semibold text-gray-600">Tipo</th>
+                      <th className="pb-3 font-semibold text-gray-600">Porcentaje de impuesto</th>
+                      <th className="pb-3 font-semibold text-gray-600">Fecha Generado</th>
+                      <th className="pb-3 font-semibold text-gray-600">Estatus</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {filteredFactura.map((factura) => (
+                      <tr key={factura.id} className="hover:bg-gray-50">
+                        <td className="py-4">
+                          <div className="flex items-center space-x-2">
+                            <DollarSign className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium">{factura.amount}</span>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex items-center space-x-2">
+                            <Hotel className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium">{factura.invoice_type}</span>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex items-center space-x-2">
+                            <Hotel className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium">{factura.tax_percentage}</span>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex items-center space-x-2">
+                            <Hotel className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium">{factura.created_at}</span>
+                          </div>
+                        </td>
+                        <td className="py-4">
+                          <div className="flex items-center space-x-2">
+                            <Hotel className="w-4 h-4 text-gray-400" />
+                            <span className="font-medium">{factura.status}</span>
+                          </div>
+                        </td>
+                      </tr>
+
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>)}
+        {/* Mia rewards View */}
+        {activeView === 'rewards' && (
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="container mx-auto w-full">
+              <div className="bg-white rounded-2xl shadow-xl p-8">
+                {/* Header */}
+                <div className="flex items-center justify-center mb-8">
+                  <Gift className="w-12 h-12 text-purple-600" />
+                  <h1 className="text-3xl font-bold text-gray-800 ml-3">Mia Rewards</h1>
+                </div>
+
+                {/* Points Card */}
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-6 mb-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 font-medium">Puntos Actuales</p>
+                      <div className="flex items-center mt-1">
+                        <Coins className="w-6 h-6 text-purple-600 mr-2" />
+                        <span className="text-4xl font-bold text-gray-800">puntos</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-gray-600 font-medium">Nivel de Membresía</p>
+                      <div className="flex items-center justify-end mt-1">
+                        <Trophy className="w-6 h-6 text-yellow-600 mr-2" />
+                        <span className="text-xl font-bold text-yellow-600">Gold</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Points Conversion */}
+                <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-3">Equivalencia en Pesos</h2>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="text-2xl font-bold text-purple-600">100 pts</span>
+                      <ArrowRight className="mx-4 text-gray-400" />
+                      <span className="text-2xl font-bold text-green-600">$equivalente</span>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm mt-2">1,000 puntos = $1 MXN</p>
+                </div>
+
+                {/* Benefits Section */}
+                <div className="mb-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-3">Beneficios Disponibles</h2>
+                  <div className="space-y-3">
+                    {/* {benefits.map((benefit) => (
+                      <div key={benefit.id} className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center">
+                          <benefit.icon className="w-6 h-6 text-purple-600 mr-3" />
+                          <span className="font-medium">{benefit.name}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-sm text-gray-600 mr-2">{benefit.points} pts</span>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </div>
+                    ))} */}
+                  </div>
+                </div>
+
+                {/* Recent Transactions */}
+                <div className="mb-6">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-3">Transacciones Recientes</h2>
+                  <div className="space-y-3">
+                    {/*transactions.map((transaction) => (
+                      <div key={transaction.id} className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                        <div>
+                          <p className="font-medium">{transaction.description}</p>
+                          <p className="text-sm text-gray-500">
+                            <Clock className="w-4 h-4 inline mr-1" />
+                            {new Date(transaction.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center">
+                          <Tag className="w-4 h-4 text-green-600 mr-1" />
+                          <span className="font-medium text-green-600">+{transaction.points} pts</span>
+                        </div>
+                      </div>
+                    ))*/}
+                  </div>
+                </div>
+
+                {/* Simulation Button */}
+                <div className="mt-6 text-center">
+                  <button
+                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    + Simular Puntos
+                  </button>
+                </div>
               </div>
             </div>
           </div>)}

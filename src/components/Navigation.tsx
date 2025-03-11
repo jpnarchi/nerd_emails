@@ -8,6 +8,7 @@ import {
   User2,
   Sparkles,
   LifeBuoy,
+  Cog,
 } from "lucide-react";
 import type { User } from "../types";
 
@@ -20,6 +21,8 @@ interface NavigationProps {
   onChatClick: () => void;
   onBookingsClick: () => void;
   onFAQClick: () => void;
+  onAdminClick: () => void;
+  onConfigurationClick: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -31,6 +34,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   onChatClick,
   onBookingsClick,
   onFAQClick,
+  onAdminClick,
+  onConfigurationClick,
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -49,6 +54,20 @@ export const Navigation: React.FC<NavigationProps> = ({
       >
         <FileText className="w-4 h-4" />
         <span>Reporte de Reservas</span>
+      </button>
+      {/*<button
+        onClick={onAdminClick}
+        className="text-gray-700 hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2"
+      >
+        <FileText className="w-4 h-4" />
+        <span>Panel de Administración</span>
+      </button>*/}
+      <button
+        onClick={onConfigurationClick}
+        className="text-gray-700 hover:text-blue-500 px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2"
+      >
+        <Cog className="w-4 h-4" />
+        <span>Configuracion de cuenta</span>
       </button>
       <button
         onClick={onProfileClick}
