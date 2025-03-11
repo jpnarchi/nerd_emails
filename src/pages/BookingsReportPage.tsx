@@ -26,6 +26,7 @@ import { InvoiceHistory } from "../components/InvoiceHistory";
 import { BillingOptions } from "../components/BillingOptions";
 import { fetchInvoices } from "../services/billingService";
 import { CallToBackend } from "../components/CallToBackend";
+import { useSolicitud } from "../hooks/useSolicitud";
 
 const DOMAIN = "http://localhost:5173";
 const payment_metadata = {};
@@ -87,6 +88,7 @@ interface BookingsReportPageProps {
 export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
   onBack,
 }) => {
+  const { obtenerSolicitudes } = useSolicitud();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -103,7 +105,15 @@ export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
   useEffect(() => {
     fetchBookings();
     loadInvoices();
+    obtenerSolicitudes((json) => {
+      console.log(json);
+      setBookings([...json, ...bookings]);
+    });
   }, []);
+
+  useEffect(() => {
+    console.log(bookings);
+  }, [bookings]);
 
   const loadInvoices = async () => {
     try {
@@ -135,7 +145,8 @@ export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setBookings(data || []);
+      console.log("Soy la data", data);
+      // setBookings([...bookings, ...data]);
     } catch (error) {
       console.error("Error fetching bookings:", error);
     } finally {
@@ -154,7 +165,7 @@ export const BookingsReportPage: React.FC<BookingsReportPageProps> = ({
 
       if (error) throw error;
 
-      setBookings((prev) => prev.filter((b) => b.id !== selectedBooking.id));
+      // setBookings((prev) => prev.filter((b) => b.id !== selectedBooking.id));
       setShowDeleteModal(false);
       setSelectedBooking(null);
     } catch (error: any) {
