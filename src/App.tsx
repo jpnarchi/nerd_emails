@@ -21,6 +21,7 @@ import {
 import { ReservationPanel } from "./components/ReservationPanel";
 import { PaymentPage } from "./pages/PaymentPage";
 import { RegistrationPage } from "./pages/RegistrationPage";
+import { NewRegistrationPage } from "./pages/NewRegistrationPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { BookingsReportPage } from "./pages/BookingsReportPage";
 import { FAQPage } from "./pages/FAQPage";
@@ -376,7 +377,7 @@ const ResponsiveChat = () => {
       />
 
       {currentPage === "registration" ? (
-        <RegistrationPage onComplete={handleRegistrationComplete} />
+        <NewRegistrationPage /*onComplete={handleRegistrationComplete}*/ />
       ) : currentPage === "payment" && bookingData ? (
         <PaymentPage bookingData={bookingData} onBack={handleBackToChat} />
       ) : currentPage === "profile" ? (
