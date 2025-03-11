@@ -8,6 +8,7 @@ interface CallToBackendProps {
   bookingData?: any;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
+let d = 2;
 
 export const CallToBackend: React.FC<CallToBackendProps> = ({
   children,
