@@ -1,17 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import type { BookingData } from '../types';
-import { Calendar, Users, CreditCard, Building2, ArrowRight, Check, Clock, Download, Receipt, CreditCard as PaymentIcon, BanknoteIcon } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
-import { supabase } from '../services/supabaseClient';
-import { CallToBackend } from '../components/CallToBackend';
+import React, { useState, useEffect } from "react";
+import type { BookingData } from "../types";
+import {
+  Calendar,
+  Users,
+  CreditCard,
+  Building2,
+  ArrowRight,
+  Check,
+  Clock,
+  Download,
+  Receipt,
+  CreditCard as PaymentIcon,
+  BanknoteIcon,
+} from "lucide-react";
+import html2pdf from "html2pdf.js";
+import { supabase } from "../services/supabaseClient";
+import { CallToBackend } from "../components/CallToBackend";
 
 const DOMAIN = "http://localhost:5173";
 const getPaymentData = (bookingData: BookingData) => {
   const payment_metadata = {
-    confirmation_code: bookingData.confirmationCode
+    confirmation_code: bookingData.confirmationCode,
   };
 
+<<<<<<< HEAD
+  const imageToUse =
+    bookingData.hotel.additionalImages?.[0] ||
+=======
   const imageToUse = bookingData.hotel.additionalImages?.[0] ||
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
     bookingData.hotel.image ||
     "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
 
@@ -24,16 +41,22 @@ const getPaymentData = (bookingData: BookingData) => {
           currency: "mxn",
           product_data: {
             name: bookingData.hotel.name,
-            description: `Reservación en ${bookingData.hotel.name} - ${bookingData.room?.type === 'single' ? 'Habitación Sencilla' : 'Habitación Doble'}`,
+            description: `Reservación en ${bookingData.hotel.name} - ${
+              bookingData.room?.type === "single"
+                ? "Habitación Sencilla"
+                : "Habitación Doble"
+            }`,
             images: [imageToUse],
           },
           unit_amount: Math.round((bookingData.room?.totalPrice || 0) * 100),
         },
         quantity: 1,
-      }
+      },
     ],
     mode: "payment",
-    success_url: `${DOMAIN}?success=true&session={CHECKOUT_SESSION_ID}&metadata=${JSON.stringify(payment_metadata)}`,
+    success_url: `${DOMAIN}?success=true&session={CHECKOUT_SESSION_ID}&metadata=${JSON.stringify(
+      payment_metadata
+    )}`,
     cancel_url: currentUrl,
   };
 };
@@ -47,16 +70,20 @@ const formatDate = (dateStr: string | null) => {
   if (!dateStr) return null;
   const date = new Date(dateStr);
   return {
-    weekday: date.toLocaleDateString('es-MX', { weekday: 'long' }),
+    weekday: date.toLocaleDateString("es-MX", { weekday: "long" }),
     day: date.getDate(),
-    month: date.toLocaleDateString('es-MX', { month: 'long' }),
-    year: date.getFullYear()
+    month: date.toLocaleDateString("es-MX", { month: "long" }),
+    year: date.getFullYear(),
   };
 };
 
 export const ReservationPanel: React.FC<ReservationPanelProps> = ({
   bookingData,
+<<<<<<< HEAD
+  onProceedToPayment,
+=======
   onProceedToPayment
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
 }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -70,15 +97,17 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
   }, [bookingData?.confirmationCode]);
 
   const handleDownloadPDF = () => {
-    const element = document.getElementById('reservation-content');
+    const element = document.getElementById("reservation-content");
     if (!element) return;
 
     const opt = {
       margin: 1,
-      filename: `reservacion-${bookingData?.confirmationCode || 'borrador'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      filename: `reservacion-${
+        bookingData?.confirmationCode || "borrador"
+      }.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
     };
 
     html2pdf().set(opt).from(element).save();
@@ -92,19 +121,26 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
       setSaveError(null);
 
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        throw new Error('Usuario no autenticado');
+        throw new Error("Usuario no autenticado");
       }
 
       // Get the first image URL from additionalImages
+<<<<<<< HEAD
+      const imageUrl =
+        bookingData.hotel.additionalImages?.[0] ||
+=======
       const imageUrl = bookingData.hotel.additionalImages?.[0] ||
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
         bookingData.hotel.image ||
         "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80";
 
       // Save booking to database
       const { data: booking, error: bookingError } = await supabase
-        .from('bookings')
+        .from("bookings")
         .insert({
           confirmation_code: bookingData.confirmationCode,
           user_id: user.id,
@@ -113,24 +149,27 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
           check_out: bookingData.dates.checkOut,
           room_type: bookingData.room?.type,
           total_price: bookingData.room?.totalPrice,
-          status: 'pending',
-          image_url: imageUrl
+          status: "pending",
+          image_url: imageUrl,
         })
         .select()
         .single();
 
       if (bookingError) {
-        console.error('Error saving booking:', bookingError);
+        console.error("Error saving booking:", bookingError);
         throw bookingError;
       }
 
       console.log("guardado");
       setIsBookingSaved(true);
+<<<<<<< HEAD
+=======
       
 
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
     } catch (error: any) {
-      console.error('Error saving booking:', error);
-      setSaveError(error.message || 'Error al guardar la reservación');
+      console.error("Error saving booking:", error);
+      setSaveError(error.message || "Error al guardar la reservación");
     } finally {
       setIsSaving(false);
     }
@@ -141,13 +180,20 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
       <div className="h-full bg-white p-6 rounded-lg shadow-lg flex items-center justify-center">
         <div className="text-center text-[#10244c]">
           <p className="text-lg mb-2">Aún no hay detalles de la reservación</p>
-          <p className="text-sm opacity-80">Los detalles se mostrarán aquí conforme avance la conversación</p>
+          <p className="text-sm opacity-80">
+            Los detalles se mostrarán aquí conforme avance la conversación
+          </p>
         </div>
       </div>
     );
   }
 
+<<<<<<< HEAD
+  const hasAnyData =
+    bookingData.hotel?.name ||
+=======
   const hasAnyData = bookingData.hotel?.name ||
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
     bookingData.dates?.checkIn ||
     bookingData.room?.type ||
     bookingData.confirmationCode;
@@ -157,7 +203,9 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
       <div className="h-full bg-white p-6 rounded-lg shadow-lg flex items-center justify-center">
         <div className="text-center text-[#10244c]">
           <p className="text-lg mb-2">Aún no hay detalles de la reservación</p>
-          <p className="text-sm opacity-80">Los detalles se mostrarán aquí conforme avance la conversación</p>
+          <p className="text-sm opacity-80">
+            Los detalles se mostrarán aquí conforme avance la conversación
+          </p>
         </div>
       </div>
     );
@@ -176,8 +224,12 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                 <div className="flex items-center space-x-3">
                   <Check className="w-6 h-6 text-green-500" />
                   <div>
-                    <h2 className="text-lg font-semibold text-[#10244c]">¡Reservación Creada!</h2>
-                    <p className="text-[#10244c]/80">Código: {bookingData.confirmationCode}</p>
+                    <h2 className="text-lg font-semibold text-[#10244c]">
+                      ¡Reservación Creada!
+                    </h2>
+                    <p className="text-[#10244c]/80">
+                      Código: {bookingData.confirmationCode}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -185,17 +237,22 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <CallToBackend
                   paymentData={getPaymentData(bookingData)}
+                  bookingData={bookingData}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                   bookingData={bookingData}
                 >
                   <PaymentIcon className="w-4 h-4" />
                   <span className="font-medium">Pagar por Stripe</span>
                 </CallToBackend>
+<<<<<<< HEAD
+                <button className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+=======
                 <CallToBackend
                   paymentData={getPaymentData(bookingData)}
                   className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                   bookingData={bookingData}
                 >
+>>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
                   <BanknoteIcon className="w-4 h-4" />
                   <span className="font-medium">Pagar por Transferencia</span>
                 </CallToBackend>
@@ -234,26 +291,36 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                 />
               )}
               <div className="p-4">
-                <h4 className="font-semibold text-lg text-[#10244c]">{bookingData.hotel.name}</h4>
+                <h4 className="font-semibold text-lg text-[#10244c]">
+                  {bookingData.hotel.name}
+                </h4>
                 {bookingData.hotel.location && (
-                  <p className="text-[#10244c]/80">{bookingData.hotel.location}</p>
+                  <p className="text-[#10244c]/80">
+                    {bookingData.hotel.location}
+                  </p>
                 )}
               </div>
             </div>
 
-            {bookingData.hotel.additionalImages && bookingData.hotel.additionalImages.length > 0 && (
-              <div className="grid grid-cols-3 gap-4 mt-4">
-                {bookingData.hotel.additionalImages.slice(0, 3).map((imageUrl, index) => (
-                  <div key={index} className="aspect-square rounded-lg overflow-hidden shadow-sm">
-                    <img
-                      src={imageUrl}
-                      alt={`${bookingData.hotel.name} - Vista ${index + 1}`}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            {bookingData.hotel.additionalImages &&
+              bookingData.hotel.additionalImages.length > 0 && (
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  {bookingData.hotel.additionalImages
+                    .slice(0, 3)
+                    .map((imageUrl, index) => (
+                      <div
+                        key={index}
+                        className="aspect-square rounded-lg overflow-hidden shadow-sm"
+                      >
+                        <img
+                          src={imageUrl}
+                          alt={`${bookingData.hotel.name} - Vista ${index + 1}`}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ))}
+                </div>
+              )}
           </div>
         )}
 
@@ -261,18 +328,28 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Calendar className="w-5 h-5 text-[#10244c]" />
-              <h3 className="text-lg font-semibold text-[#10244c]">Fechas de Estancia</h3>
+              <h3 className="text-lg font-semibold text-[#10244c]">
+                Fechas de Estancia
+              </h3>
             </div>
             <div className="bg-gray-50 rounded-lg p-6">
               <div className="flex justify-between items-center">
                 <div className="space-y-1">
-                  <p className="text-[#10244c]/80 text-sm uppercase tracking-wider">Check-in</p>
+                  <p className="text-[#10244c]/80 text-sm uppercase tracking-wider">
+                    Check-in
+                  </p>
                   {checkInDate ? (
                     <div className="space-y-1">
-                      <p className="text-3xl font-bold text-[#10244c]">{checkInDate.day + 1}</p>
+                      <p className="text-3xl font-bold text-[#10244c]">
+                        {checkInDate.day + 1}
+                      </p>
                       <div>
-                        <p className="text-lg capitalize text-[#10244c]">{checkInDate.month}</p>
-                        <p className="text-sm text-[#10244c]/80 capitalize">{checkInDate.weekday}</p>
+                        <p className="text-lg capitalize text-[#10244c]">
+                          {checkInDate.month}
+                        </p>
+                        <p className="text-sm text-[#10244c]/80 capitalize">
+                          {checkInDate.weekday}
+                        </p>
                       </div>
                     </div>
                   ) : (
@@ -285,19 +362,30 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                     <ArrowRight className="w-6 h-6 text-[#10244c]/80" />
                     <div className="mt-2 text-center">
                       <p className="text-sm text-[#10244c]/80">Duración</p>
-                      <p className="font-bold text-[#10244c]">{bookingData.totalNights} {bookingData.totalNights === 1 ? 'noche' : 'noches'}</p>
+                      <p className="font-bold text-[#10244c]">
+                        {bookingData.totalNights}{" "}
+                        {bookingData.totalNights === 1 ? "noche" : "noches"}
+                      </p>
                     </div>
                   </div>
                 )}
 
                 <div className="space-y-1">
-                  <p className="text-[#10244c]/80 text-sm uppercase tracking-wider">Check-out</p>
+                  <p className="text-[#10244c]/80 text-sm uppercase tracking-wider">
+                    Check-out
+                  </p>
                   {checkOutDate ? (
                     <div className="space-y-1">
-                      <p className="text-3xl font-bold text-[#10244c]">{checkOutDate.day + 1}</p>
+                      <p className="text-3xl font-bold text-[#10244c]">
+                        {checkOutDate.day + 1}
+                      </p>
                       <div>
-                        <p className="text-lg capitalize text-[#10244c]">{checkOutDate.month}</p>
-                        <p className="text-sm text-[#10244c]/80 capitalize">{checkOutDate.weekday}</p>
+                        <p className="text-lg capitalize text-[#10244c]">
+                          {checkOutDate.month}
+                        </p>
+                        <p className="text-sm text-[#10244c]/80 capitalize">
+                          {checkOutDate.weekday}
+                        </p>
                       </div>
                     </div>
                   ) : (
@@ -313,15 +401,21 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <CreditCard className="w-5 h-5 text-[#10244c]" />
-              <h3 className="text-lg font-semibold text-[#10244c]">Detalles de la Habitación</h3>
+              <h3 className="text-lg font-semibold text-[#10244c]">
+                Detalles de la Habitación
+              </h3>
             </div>
             <div className="bg-gray-50 rounded-lg p-6">
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm text-[#10244c]/80">Tipo de Habitación</p>
+                    <p className="text-sm text-[#10244c]/80">
+                      Tipo de Habitación
+                    </p>
                     <p className="text-lg font-medium text-[#10244c]">
-                      {bookingData.room.type === 'single' ? 'Sencilla' : 'Doble'}
+                      {bookingData.room.type === "single"
+                        ? "Sencilla"
+                        : "Doble"}
                     </p>
                   </div>
                   {bookingData.totalNights && (
@@ -330,7 +424,8 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                       <div className="flex items-center space-x-2">
                         <Clock className="w-4 h-4 text-[#10244c]/80" />
                         <p className="text-lg font-medium text-[#10244c]">
-                          {bookingData.totalNights} {bookingData.totalNights === 1 ? 'noche' : 'noches'}
+                          {bookingData.totalNights}{" "}
+                          {bookingData.totalNights === 1 ? "noche" : "noches"}
                         </p>
                       </div>
                     </div>
@@ -339,9 +434,13 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                 <div className="space-y-4">
                   {bookingData.room.pricePerNight && (
                     <div>
-                      <p className="text-sm text-[#10244c]/80">Precio por Noche</p>
+                      <p className="text-sm text-[#10244c]/80">
+                        Precio por Noche
+                      </p>
                       <p className="text-lg font-medium text-[#10244c]">
-                        ${bookingData.room.pricePerNight.toLocaleString('es-MX')} MXN
+                        $
+                        {bookingData.room.pricePerNight.toLocaleString("es-MX")}{" "}
+                        MXN
                       </p>
                     </div>
                   )}
@@ -349,7 +448,8 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
                     <div>
                       <p className="text-sm text-[#10244c]/80">Precio Total</p>
                       <p className="text-xl font-semibold text-[#10244c]">
-                        ${bookingData.room.totalPrice.toLocaleString('es-MX')} MXN
+                        ${bookingData.room.totalPrice.toLocaleString("es-MX")}{" "}
+                        MXN
                       </p>
                     </div>
                   )}
@@ -363,14 +463,18 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Users className="w-5 h-5 text-[#10244c]" />
-              <h3 className="text-lg font-semibold text-[#10244c]">Huéspedes</h3>
+              <h3 className="text-lg font-semibold text-[#10244c]">
+                Huéspedes
+              </h3>
             </div>
             <div className="bg-gray-50 rounded-lg p-4">
               <ul className="space-y-2">
                 {bookingData.guests.map((guest, index) => (
                   <li key={index} className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-full bg-[#10244c]/10 flex items-center justify-center">
-                      <span className="text-[#10244c] font-medium">{guest.charAt(0)}</span>
+                      <span className="text-[#10244c] font-medium">
+                        {guest.charAt(0)}
+                      </span>
                     </div>
                     <span className="text-[#10244c]/90">{guest}</span>
                   </li>
@@ -380,6 +484,7 @@ export const ReservationPanel: React.FC<ReservationPanelProps> = ({
           </div>
         )}
       </div>
+      <div></div>
     </div>
   );
 };

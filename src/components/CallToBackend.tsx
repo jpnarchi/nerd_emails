@@ -1,14 +1,23 @@
-import React from 'react';
+import React from "react";
+import { useSolicitud } from "../hooks/useSolicitud";
 
 interface CallToBackendProps {
   children: React.ReactNode;
   paymentData: any;
   className?: string;
+  bookingData?: any;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   bookingData: any;
 }
+let d = 2;
 
-export const CallToBackend: React.FC<CallToBackendProps> = ({ children, paymentData, className, onClick, bookingData }) => {
+export const CallToBackend: React.FC<CallToBackendProps> = ({
+  children,
+  paymentData,
+  className,
+  onClick,
+  bookingData,
+}) => {
   const urlParams = new URLSearchParams(window.location.search);
   const session = urlParams.get("session");
 
@@ -25,11 +34,7 @@ export const CallToBackend: React.FC<CallToBackendProps> = ({ children, paymentD
   };
 
   return (
-    <button 
-      onClick={handleSubmit} 
-      className={className}
-      type="button"
-    >
+    <button onClick={handleSubmit} className={className} type="button">
       {children}
     </button>
   );
@@ -59,7 +64,7 @@ const obtenerSessionCheckout = async (ID_CHECKOUT_SESSION: string) => {
     {
       method: "GET",
       headers: {
-        "Content-Type":  "application/json",
+        "Content-Type": "application/json",
         ...AUTH,
       },
     }
@@ -79,32 +84,32 @@ const crearSessionCheckout = async (payment_data: any, bookingData: any) => {
   // });
   console.log(bookingData);
   // const json = await response.json();
-  try{
+  try {
     const response = await fetch(`http://localhost:3000/v1/solicitud/create`, {
       method: "POST",
       headers: {
-        "Content-Type":  "application/json",
+        "Content-Type": "application/json",
         ...AUTH,
       },
       body: JSON.stringify({
-        "confirmation_code": bookingData.confirmationCode,
-        "id_viajero": 1,
-        "hotel_name":bookingData.hotel.name,
-        "check_in": bookingData.dates.checkIn,
-        "check_out": bookingData.dates.checkOut,
-        "room_type": bookingData.room?.type,
-        "total_price": bookingData.room?.totalPrice,
-        "status": "pending",
+        confirmation_code: bookingData.confirmationCode,
+        id_viajero: 1,
+        hotel_name: bookingData.hotel.name,
+        check_in: bookingData.dates.checkIn,
+        check_out: bookingData.dates.checkOut,
+        room_type: bookingData.room?.type,
+        total_price: bookingData.room?.totalPrice,
+        status: "pending",
       }),
-    })
+    });
     const json = await response.json();
     console.log("termino");
     console.log(json);
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
   //console.log(payment_data);
   console.log(201);
-  return(201);
+  return 201;
   // window.location = json.url;
 };
