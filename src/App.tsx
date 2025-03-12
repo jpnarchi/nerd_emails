@@ -21,6 +21,7 @@ import {
 import { ReservationPanel } from "./components/ReservationPanel";
 import { PaymentPage } from "./pages/PaymentPage";
 import { RegistrationPage } from "./pages/RegistrationPage";
+import { NewRegistrationPage } from "./pages/NewRegistrationPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { BookingsReportPage } from "./pages/BookingsReportPage";
 import { FAQPage } from "./pages/FAQPage";
@@ -32,19 +33,7 @@ import { Configuration } from "./pages/Configuration";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
-<<<<<<< HEAD
-    | "chat"
-    | "profile"
-    | "registration"
-    | "payment"
-    | "bookings"
-    | "faq"
-    | "hotels"
-    | "manual-reservation"
-    | "admin"
-=======
     "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin" | "admin-empresa" | "configuration"
->>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
   >("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -376,7 +365,7 @@ const ResponsiveChat = () => {
       />
 
       {currentPage === "registration" ? (
-        <RegistrationPage onComplete={handleRegistrationComplete} />
+        <NewRegistrationPage onComplete={handleRegistrationComplete} />
       ) : currentPage === "payment" && bookingData ? (
         <PaymentPage bookingData={bookingData} onBack={handleBackToChat} />
       ) : currentPage === "profile" ? (

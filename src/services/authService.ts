@@ -1,5 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { RegistrationFormData, QuestionnaireData } from '../types';
+import { createAgente } from "../hooks/useDatabase";
+import { formatDate } from '../helpers/helpers';
 
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -85,11 +87,11 @@ export const registerUser = async (
         status: authError.status,
         message: authError.message
       });
-      
+
       if (authError.message.includes('User already registered')) {
         throw new Error('Este correo electrónico ya está registrado');
       }
-      
+
       throw new Error('Error al registrar usuario. Por favor intenta de nuevo.');
     }
 
@@ -130,7 +132,7 @@ export const registerUser = async (
 
     // 5. Sign in the user immediately
     const { data: session } = await supabase.auth.getSession();
-    
+
     if (!session?.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -149,7 +151,7 @@ export const registerUser = async (
     };
   } catch (error: any) {
     console.error('Registration error:', error);
-    
+
     // Handle specific error cases
     if (error?.message?.includes('duplicate key value')) {
       throw new Error('Este correo electrónico ya está registrado');
@@ -158,7 +160,98 @@ export const registerUser = async (
     if (error?.message?.includes('Password should be at least 6 characters')) {
       throw new Error('La contraseña debe tener al menos 6 caracteres');
     }
-    
+
+    // Return a user-friendly error message
+    throw new Error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
+  }
+};
+
+
+export const newRegisterUser = async (
+  formData: RegistrationFormData,
+) => {
+  try {
+    // Validate email format
+    if (!validateEmail(formData.email)) {
+      throw new Error('El formato del correo electrónico no es válido');
+    }
+
+    // 1. Check if user exists first to avoid rate limit
+    const { data: existingUser, error: signInError } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password
+    });
+    console.log(existingUser);
+    if (existingUser?.user) {
+      throw new Error('Este correo electrónico ya está registrado');
+    }
+    console.log(formData.email);
+    // // 2. Register user with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          full_name: formData.name,
+          phone: formData.phone
+        },
+        emailRedirectTo: undefined // Disable email confirmation
+      }
+    });
+
+    if (authError) {
+      console.error('Supabase request failed', {
+        status: authError.status,
+        message: authError.message
+      });
+
+      if (authError.message.includes('User already registered')) {
+        throw new Error('Este correo electrónico ya está registrado');
+      }
+
+      throw new Error('Error al registrar usuario. Por favor intenta de nuevo.');
+    }
+
+    if (!authData.user) {
+      throw new Error('No se pudo crear el usuario');
+    }
+    // 3. Create agent profile
+    const response = await createAgente(formData, authData.user.id);
+    if (!response.success) {
+      throw new Error("No se pudo registrar al usuario");
+    }
+
+    // 4. Sign in the user immediately
+    const { data: session } = await supabase.auth.getSession();
+
+    if (!session?.session) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password
+      });
+
+      if (signInError) {
+        console.error('Sign in error:', signInError);
+        throw new Error('Error al iniciar sesión automáticamente');
+      }
+    }
+
+    return {
+      success: true
+    };
+
+  } catch (error: any) {
+    console.error('Registration error:', error);
+
+    // Handle specific error cases
+    if (error?.message?.includes('duplicate key value')) {
+      throw new Error('Este correo electrónico ya está registrado');
+    }
+
+    if (error?.message?.includes('Password should be at least 6 characters')) {
+      throw new Error('La contraseña debe tener al menos 6 caracteres');
+    }
+
     // Return a user-friendly error message
     throw new Error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
   }
