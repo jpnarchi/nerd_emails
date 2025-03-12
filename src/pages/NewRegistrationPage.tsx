@@ -18,7 +18,7 @@ interface RegistrationPageProps {
 }
 
 export const NewRegistrationPage: React.FC<RegistrationPageProps> = ({onComplete}) => {
-    const [step, setStep] = useState<'personal'>('personal');
+    const [step, setStep] = useState<'personal' | 'completed'>('personal');
     const [formData, setFormData] = useState<RegistrationFormData>({
         name: '',
         secondName: '',
@@ -42,7 +42,11 @@ export const NewRegistrationPage: React.FC<RegistrationPageProps> = ({onComplete
 
             const result = await newRegisterUser(formData);
             if (result.success) {
-                console.log("revisa correo");
+                //Aqui se deberia verificar el correo pero por mientras se queda que se logea y ya
+                // console.log("revisa correo");
+                // setStep('completed');
+                onComplete();
+
             }
         } catch (error: any) {
             console.error('Error during registration:', error);
@@ -273,6 +277,16 @@ export const NewRegistrationPage: React.FC<RegistrationPageProps> = ({onComplete
                         {renderPersonalForm()}
                     </>
                 );
+            case 'completed':
+                return (
+                    <>
+                        <div className='flex flex-col justify-center items-center'>
+                            <h1>Registro realizado correctamente</h1>
+                            <p>Verifica tu direccion de correo electronico</p>
+                            <CheckCircle2/>
+                        </div>
+                    </>
+                )
         }
     };
 

@@ -1,5 +1,7 @@
 import { supabase } from './supabaseClient';
 import type { RegistrationFormData, QuestionnaireData } from '../types';
+import { createAgente } from "../hooks/useDatabase";
+import { formatDate } from '../helpers/helpers';
 
 const validateEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -85,11 +87,11 @@ export const registerUser = async (
         status: authError.status,
         message: authError.message
       });
-      
+
       if (authError.message.includes('User already registered')) {
         throw new Error('Este correo electrónico ya está registrado');
       }
-      
+
       throw new Error('Error al registrar usuario. Por favor intenta de nuevo.');
     }
 
@@ -130,7 +132,7 @@ export const registerUser = async (
 
     // 5. Sign in the user immediately
     const { data: session } = await supabase.auth.getSession();
-    
+
     if (!session?.session) {
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: formData.email,
@@ -149,7 +151,7 @@ export const registerUser = async (
     };
   } catch (error: any) {
     console.error('Registration error:', error);
-    
+
     // Handle specific error cases
     if (error?.message?.includes('duplicate key value')) {
       throw new Error('Este correo electrónico ya está registrado');
@@ -158,7 +160,7 @@ export const registerUser = async (
     if (error?.message?.includes('Password should be at least 6 characters')) {
       throw new Error('La contraseña debe tener al menos 6 caracteres');
     }
-    
+
     // Return a user-friendly error message
     throw new Error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
   }
@@ -175,25 +177,25 @@ export const newRegisterUser = async (
     }
 
     // 1. Check if user exists first to avoid rate limit
-    const { data: existingUser } = await supabase.auth.signInWithPassword({
+    const { data: existingUser, error: signInError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password
     });
-
+    console.log(existingUser);
     if (existingUser?.user) {
       throw new Error('Este correo electrónico ya está registrado');
     }
     console.log(formData.email);
-    // 2. Register user with Supabase Auth
+    // // 2. Register user with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
       options: {
         data: {
-          name: formData.name,
+          full_name: formData.name,
           phone: formData.phone
         },
-        emailRedirectTo: "http://localhost:5173/" // Disable email confirmation
+        emailRedirectTo: undefined // Disable email confirmation
       }
     });
 
@@ -202,55 +204,45 @@ export const newRegisterUser = async (
         status: authError.status,
         message: authError.message
       });
-      
+
       if (authError.message.includes('User already registered')) {
         throw new Error('Este correo electrónico ya está registrado');
       }
-      
+
       throw new Error('Error al registrar usuario. Por favor intenta de nuevo.');
     }
 
     if (!authData.user) {
       throw new Error('No se pudo crear el usuario');
     }
+    // 3. Create agent profile
+    const response = await createAgente(formData, authData.user.id);
+    if (!response.success) {
+      throw new Error("No se pudo registrar al usuario");
+    }
 
-    // 3. Create company profile
-    // const { error: companyError } = await supabase
-    //   .from('company_profiles')
-    //   .insert({
-    //     user_id: authData.user.id,
-    //     company_name: formData.companyName,
-    //     rfc: formData.rfc || null,
-    //     industry: formData.industry,
-    //     city: formData.city
-    //   });
+    // 4. Sign in the user immediately
+    const { data: session } = await supabase.auth.getSession();
 
-    // if (companyError) {
-    //   console.error('Company profile creation error:', companyError);
-    //   throw new Error('Error al crear el perfil de la empresa');
-    // }
+    if (!session?.session) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password
+      });
 
-    // 5. Sign in the user immediately
-    // const { data: session } = await supabase.auth.getSession();
-    
-    // if (!session?.session) {
-    //   const { error: signInError } = await supabase.auth.signInWithPassword({
-    //     email: formData.email,
-    //     password: formData.password
-    //   });
-
-    //   if (signInError) {
-    //     console.error('Sign in error:', signInError);
-    //     throw new Error('Error al iniciar sesión automáticamente');
-    //   }
-    // }
+      if (signInError) {
+        console.error('Sign in error:', signInError);
+        throw new Error('Error al iniciar sesión automáticamente');
+      }
+    }
 
     return {
       success: true
     };
+
   } catch (error: any) {
     console.error('Registration error:', error);
-    
+
     // Handle specific error cases
     if (error?.message?.includes('duplicate key value')) {
       throw new Error('Este correo electrónico ya está registrado');
@@ -259,7 +251,7 @@ export const newRegisterUser = async (
     if (error?.message?.includes('Password should be at least 6 characters')) {
       throw new Error('La contraseña debe tener al menos 6 caracteres');
     }
-    
+
     // Return a user-friendly error message
     throw new Error(error.message || 'Error al registrar. Por favor intenta de nuevo.');
   }
