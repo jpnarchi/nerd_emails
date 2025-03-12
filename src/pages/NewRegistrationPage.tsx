@@ -17,7 +17,7 @@ interface RegistrationPageProps {
     onComplete: () => void;
 }
 
-export const NewRegistrationPage: React.FC<RegistrationPageProps> = () => {
+export const NewRegistrationPage: React.FC<RegistrationPageProps> = ({onComplete}) => {
     const [step, setStep] = useState<'personal'>('personal');
     const [formData, setFormData] = useState<RegistrationFormData>({
         name: '',

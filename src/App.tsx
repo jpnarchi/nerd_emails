@@ -33,19 +33,7 @@ import { Configuration } from "./pages/Configuration";
 
 const ResponsiveChat = () => {
   const [currentPage, setCurrentPage] = useState<
-<<<<<<< HEAD
-    | "chat"
-    | "profile"
-    | "registration"
-    | "payment"
-    | "bookings"
-    | "faq"
-    | "hotels"
-    | "manual-reservation"
-    | "admin"
-=======
     "chat" | "profile" | "registration" | "payment" | "bookings" | "faq" | "hotels" | "manual-reservation" | "admin" | "admin-empresa" | "configuration"
->>>>>>> b69dcf6553789adf80772ca48c2fd32cbbf7ef8f
   >("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -377,7 +365,7 @@ const ResponsiveChat = () => {
       />
 
       {currentPage === "registration" ? (
-        <NewRegistrationPage /*onComplete={handleRegistrationComplete}*/ />
+        <NewRegistrationPage onComplete={handleRegistrationComplete} />
       ) : currentPage === "payment" && bookingData ? (
         <PaymentPage bookingData={bookingData} onBack={handleBackToChat} />
       ) : currentPage === "profile" ? (
