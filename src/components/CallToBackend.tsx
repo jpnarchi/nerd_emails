@@ -7,7 +7,6 @@ interface CallToBackendProps {
   className?: string;
   bookingData?: any;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  bookingData: any;
 }
 let d = 2;
 
@@ -82,7 +81,6 @@ const crearSessionCheckout = async (payment_data: any, bookingData: any) => {
   //   },
   //   body: JSON.stringify({ payment_data }),
   // });
-<<<<<<< Updated upstream
   console.log(bookingData);
   // const json = await response.json();
   try {
@@ -112,7 +110,6 @@ const crearSessionCheckout = async (payment_data: any, bookingData: any) => {
   //console.log(payment_data);
   console.log(201);
   return 201;
-=======
   console.log(payment_data);
   // // const json = await response.json();
   // try{
@@ -142,6 +139,5 @@ const crearSessionCheckout = async (payment_data: any, bookingData: any) => {
   // //console.log(payment_data);
   // console.log(201);
   // return(201);
->>>>>>> Stashed changes
   // window.location = json.url;
 };
